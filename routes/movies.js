@@ -1,7 +1,7 @@
 const express = require("express");
 const { Movies, validateMovie } = require("../models/movie");
 const { Genre } = require("../models/genre");
-
+const auth = require("../middleware/auth");
 const movieRouter = express.Router();
 
 movieRouter
@@ -10,7 +10,7 @@ movieRouter
     const movies = await Movies.find({}).sort("name");
     res.send(movies);
   })
-  .post(async (req, res) => {
+  .post(auth, async (req, res) => {
     const { error } = validateMovie(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -32,7 +32,7 @@ movieRouter
 
 movieRouter
   .route("/:id")
-  .put(async (req, res) => {
+  .put(auth, async (req, res) => {
     // const { error } = validateMovie(req.body);
     // if (error) return res.status(400).send(error.details[0].message);
 
@@ -47,7 +47,7 @@ movieRouter
     if (!movie) return res.status(400).send("No Movies with this id");
     res.send(movie);
   })
-  .delete(async (req, res) => {
+  .delete(auth, async (req, res) => {
     const movie = await Movies.findByIdAndDelete(req.params.id);
     if (!movie) return res.status(400).send("No Movies with this id");
     res.send(movie);

@@ -5,7 +5,7 @@ const { Customers } = require("../models/customer");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Fawn = require("fawn");
-
+const auth = require("../middleware/auth");
 Fawn.init(mongoose);
 router
   .route("/")
@@ -13,7 +13,7 @@ router
     const rentals = await Rental.find({}).sort("-dateOut");
     res.send(rentals);
   })
-  .post(async (req, res) => {
+  .post(auth, async (req, res) => {
     const { error } = validateRental(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const customer = await Customers.findById(req.body.customerId);
