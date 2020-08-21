@@ -1,67 +1,68 @@
-const Joi = require("joi");
+const Joi = require('joi');
+const mongoose = require('mongoose');
 
-const mongoose = require("mongoose");
-
-const rental = new mongoose.Schema({
-  customer: {
+const Rental = mongoose.model('Rental', new mongoose.Schema({
+  customer: { 
     type: new mongoose.Schema({
       name: {
         type: String,
         required: true,
-        minlength: 0,
-        maxlength: 255,
+        minlength: 5,
+        maxlength: 50
       },
       isGold: {
         type: Boolean,
-        default: false,
+        default: false
       },
       phone: {
-        type: Number,
+        type: String,
         required: true,
-        minlength: 6,
-        maxlength: 11,
-      },
-    }),
-    required: true,
+        minlength: 5,
+        maxlength: 50
+      }      
+    }),  
+    required: true
   },
   movie: {
     type: new mongoose.Schema({
       title: {
         type: String,
         required: true,
-        minlength: 0,
-        maxlength: 255,
+        trim: true, 
+        minlength: 5,
+        maxlength: 255
       },
-      dailyRentalRate: {
-        type: Number,
+      dailyRentalRate: { 
+        type: Number, 
         required: true,
-        maxlength: 10,
-      },
+        min: 0,
+        max: 255
+      }   
     }),
+    required: true
+  },
+  dateOut: { 
+    type: Date, 
     required: true,
+    default: Date.now
   },
-  dateOut: {
-    type: Date,
-    default: Date.now(),
+  dateReturned: { 
+    type: Date
   },
-  dateRented: {
-    type: Date,
-  },
-  rentalFee: {
-    type: Number,
-    min: 0,
-  },
-});
+  rentalFee: { 
+    type: Number, 
+    min: 0
+  }
+}));
 
-const Rental = mongoose.model("Rental", rental);
-
-function validateRental(item) {
-  const Schema = {
+function validateRental(rental) {
+  const schema = {
     customerId: Joi.objectId().required(),
-    movieId: Joi.objectId().required(),
+    movieId: Joi.objectId().required()
   };
-  return Joi.validate(item, Schema);
+
+  return Joi.validate(rental, schema);
 }
 
-exports.Rental = Rental;
-exports.validateRental = validateRental;
+exports.Rental = Rental; 
+exports.validate = validateRental;
